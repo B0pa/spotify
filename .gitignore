@@ -9,6 +9,7 @@
 # === Environnements ===
 /.env.dev
 /.env.dev.php
+/.env.local
 
 # === Logs & Cache ===
 /var/log/
