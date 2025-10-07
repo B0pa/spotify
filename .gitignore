@@ -1,0 +1,50 @@
+# === Symfony ===
+/var/
+/vendor/
+/public/bundles/
+/public/build/
+/translations/.*
+/.phpunit.result.cache
+
+# === Environnements ===
+/.env.dev
+/.env.dev.php
+
+# === Logs & Cache ===
+/var/log/
+/var/cache/
+/var/sessions/
+
+# === Node / Front ===
+node_modules/
+/npm-debug.log*
+/yarn-debug.log*
+/yarn-error.log*
+/package-lock.json
+/pnpm-lock.yaml
+/yarn.lock
+
+# === IDEs ===
+.idea/
+.vscode/
+*.iml
+
+# === OS ===
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# === Tests ===
+/coverage/
+
+# === Docker / Local ===
+/docker-compose.override.yml
+/.docker/
+/.dockerignore
+
+# === Divers ===
+*.bak
+*.swp
+*.tmp
+
