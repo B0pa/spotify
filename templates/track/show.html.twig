@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Recherche Spotify{% endblock %}
+
+{% block body %}
+    <a href="{{ path('app_track_index') }}">Retour</a>
+    <div>
+        <div>
+            <img src="{{ track.pictureLink }}" alt="{{ track.name }}">
+            <h3>{% if track.explicit %}[E] {% endif %}{{ track.name }}</h3>
+        </div>
+        <p>{{ track.popularity }}</p>
+        <p>{{ track.discNumber }}</p>
+        <p>{{ track.durationMs }}</p>
+        <p>{{ track.isrc }}</p>
+        <p>{{ track.spotifyUrl }}</p>
+        <p>{{ track.href }}</p>
+        <p>{{ track.spotifyId }}</p>
+        <p>{{ track.previewUrl }}</p>
+        <p>{{ track.trackNumber }}</p>
+        <p>{{ track.type }}</p>
+        <div>
+            <a href="{{ track.uri }}">Ecouter</a>
+        </div>
+
+    </div>
+
+{% endblock %}

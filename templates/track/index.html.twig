@@ -1,20 +1,27 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello TrackController!{% endblock %}
+{% block title %}Recherche Spotify{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+    <h1>Recherche de morceaux</h1>
+    {{ render(path('app_include_search_form')) }}
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+    <hr>
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>D:/Documents/cours/3A/Symfony/spotify/src/Controller/TrackController.php</code></li>
-        <li>Your template at <code>D:/Documents/cours/3A/Symfony/spotify/templates/track/index.html.twig</code></li>
-    </ul>
-</div>
+    <h2>Résultat pour {{ search }} : </h2>
+
+    {% if tracks is not empty %}
+        {% for track in tracks %}
+            <p>
+                <a href="{{ path('app_track_show',{"id":track.id}) }}">{{ track.name }}</a>
+            </p>
+
+
+        {% endfor %}
+    {% else %}
+        <p>Aucun résultat trouvé.</p>
+    {% endif %}
+
+
 {% endblock %}
+
