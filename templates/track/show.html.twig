@@ -2,27 +2,94 @@
 
 {% block title %}Recherche Spotify{% endblock %}
 
+{% set totalSeconds = (track.durationMs / 1000)|round(0, 'floor') %}
+{% set minutes = (totalSeconds / 60)|round(0, 'floor') %}
+{% set seconds = totalSeconds % 60 %}
+
 {% block body %}
-    <a href="{{ path('app_track_index') }}">Retour</a>
-    <div>
-        <div>
-            <img src="{{ track.pictureLink }}" alt="{{ track.name }}">
-            <h3>{% if track.explicit %}[E] {% endif %}{{ track.name }}</h3>
+<div class="container mt-4"> <a href="{{ path('app_track_index') }}" class="btn btn-outline-secondary mb-4"> <i class="bi bi-arrow-left"></i> Retour </a>
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <img src="{{ track.pictureLink }}" alt="{{ track.name }}" class="img-fluid rounded" style="height: 200px; object-fit: cover;">
+                        </div>
+                        <div class="col-md-8">
+                            <h3 class="card-title">
+                                {% if track.explicit %}<span class="badge bg-danger me-2">E</span>{% endif %}
+                                {{ track.name }}
+                            </h3>
+                            <p class="text-muted h5">
+                                {% for artist in track.artists %}{{ artist.name }}{% if not loop.last %}, {% endif %}{% endfor %}
+                            </p>
+                            <div class="mt-3">
+                                <span class="badge bg-primary me-2">Popularité: {{ track.popularity }}%</span>
+                                <span class="badge bg-secondary me-2">Durée: {{ minutes }}:{% if seconds < 10 %}0{% endif %}{{ seconds }} min</span>
+                                <span class="badge bg-info">Piste: {{ track.trackNumber }}</span>
+                            </div>
+                            <div class="mt-3">
+                                <a href="{{ track.uri }}" class="btn btn-success btn-sm" target="_blank">
+                                    <i class="fa-brands fa-spotify text-light"></i> Écouter sur Spotify
+                                </a>
+                                {% if track.previewUrl %}
+                                    <audio controls class="mt-2 d-block">
+                                        <source src="{{ track.previewUrl }}" type="audio/mpeg">
+                                        Votre navigateur ne supporte pas l'élément audio.
+                                    </audio>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>ISRC:</strong> {{ track.isrc }}</p>
+                            <p><strong>Numéro de disque:</strong> {{ track.discNumber }}</p>
+                            <p><strong>Type:</strong> {{ track.type }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>ID Spotify:</strong> {{ track.spotifyId }}</p>
+                            <p><strong>Lien Externe:</strong>
+                                <a href="{{ track.spotifyUrl }}" target="_blank" class="btn btn-secondary text-decoration-none">Ouvrir</a>
+                            </p>
+                            <p><strong>Lien API:</strong>
+                                <a href="{{ track.href }}" target="_blank" class="text-decoration-none">Ouvrir</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <p>{{ track.popularity }}</p>
-        <p>{{ track.discNumber }}</p>
-        <p>{{ track.durationMs }}</p>
-        <p>{{ track.isrc }}</p>
-        <p>{{ track.spotifyUrl }}</p>
-        <p>{{ track.href }}</p>
-        <p>{{ track.spotifyId }}</p>
-        <p>{{ track.previewUrl }}</p>
-        <p>{{ track.trackNumber }}</p>
-        <p>{{ track.type }}</p>
-        <div>
-            <a href="{{ track.uri }}">Ecouter</a>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h4 class="h6 mb-0">Artistes</h4>
+                </div>
+                <div class="card-body">
+                    {% for artist in track.artists %}
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <div class="text-center">
+                                    <img src="{{ artist.imageUrl }}" alt="{{ artist.name }}" class="rounded-circle mb-2" style="width: 80px; height: 80px; object-fit: cover;">
+                                    <h5 class="card-title h6">{{ artist.name }}</h5>
+                                    <p class="text-muted small">{{ artist.followers|number_format(0, ',', ' ') }} followers</p>
+                                </div>
+                                <div class="d-flex gap-2 justify-content-center">
+                                    <a href="{{ path('app_artist_show',{"id":artist.idSpotify}) }}" class="btn btn-outline-primary btn-sm">
+                                        Voir détails
+                                    </a>
+                                    <a href="{{ artist.Uri }}" class="btn btn-outline-success btn-sm" target="_blank">
+                                        <i class="fa-brands fa-spotify"></i>Spotify
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
         </div>
-
     </div>
-
-{% endblock %}
+</div> {% endblock %}

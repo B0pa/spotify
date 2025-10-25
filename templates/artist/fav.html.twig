@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Artist Favoris{% endblock %}
+
+{% block body %}
+
+    <div class="d-flex align-items-center me-2">
+
+        <h1>Mes Artistes Favoris</h1>
+</div>
+
+    <hr>
+
+    {% if fav is not empty %}
+        {% for artist in fav %}
+            <div class="d-flex gap-2 m-5 p-2" >
+                <div class="w-25">
+                    <img src="{{ artist.imageUrl }}" alt="{{ artist.name }}" width="100" height="100">
+                    <a href="{{ path('app_artist_show',{"id":artist.idSpotify}) }}">{{ artist.name }}</a>
+                </div>
+                <div class="w-50" >
+                        {% include 'artist/_delete_from_like.html.twig' %}
+                </div>
+
+            </div>
+
+
+
+        {% endfor %}
+    {% else %}
+        <p>Aucun résultat trouvé.</p>
+    {% endif %}
+
+
+{% endblock %}
+

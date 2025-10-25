@@ -3,25 +3,56 @@
 {% block title %}Recherche Spotify{% endblock %}
 
 {% block body %}
-    <h1>Recherche de morceaux</h1>
-    {{ render(path('app_include_search_form')) }}
+    <div class="d-flex align-items-center me-2">
+        <div>
+            <h1>Recherche de morceaux</h1>
+            {{ render(path('app_include_search_form_track')) }}
+        </div>
+    </div>
 
     <hr>
 
     <h2>Résultat pour {{ search }} : </h2>
 
+    <div class="d-flex flex-wrap justify-content-center gap-4" >
+
     {% if tracks is not empty %}
         {% for track in tracks %}
-            <p>
-                <a href="{{ path('app_track_show',{"id":track.id}) }}">{{ track.name }}</a>
-            </p>
+            {% set totalSeconds = (track.durationMs / 1000)|round(0, 'floor') %}
+            {% set minutes = (totalSeconds / 60)|round(0, 'floor') %}
+            {% set seconds = totalSeconds % 60 %}
+            <div class="d-flex flex-column gap-2 p-2 bg-light rounded card" style="width: 18rem;" >
+                <img src="{{ track.pictureLink }}" alt="{{ track.name }}" height="100%" width="100%" class="rounded align-self-center" >
+                <div class="d-flex align-items-center card-body" >
+                    <div>
+                        <p class="fw-bold font-decoration-none" >
+                        {% if track.explicit %}
+                            <span class="badge bg-dark me-2">E</span>
+                        {% endif %}
+                        <a class="" href="{{ path('app_track_show',{"id":track.spotifyId}) }}">{{ track.name }} - {% for artist in track.artists%}{{ artist.name }} {% endfor %}</a></p>
+                        <p>{{ minutes }}:{% if seconds < 10 %}0{% endif %}{{ seconds }} min</p>
 
+                    </div>
+
+                </div>
+                <div class="ms-auto d-flex gap-2" >
+                    <a class="btn btn-primary" href="{{ path('app_track_show',{"id":track.spotifyId}) }}">Voir</a>
+                    {% if track.spotifyId in fav %}
+                        {% include 'track/_delete_from_like.html.twig' %}
+                    {% else %}
+                        {% include 'track/_add_to_like.html.twig' %}
+                    {% endif %}
+
+                </div>
+
+            </div>
 
         {% endfor %}
     {% else %}
         <p>Aucun résultat trouvé.</p>
     {% endif %}
 
+    </div>
 
 {% endblock %}
 
