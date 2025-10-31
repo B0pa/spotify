@@ -15,6 +15,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/track')]
 class TrackController extends AbstractController
@@ -29,87 +30,82 @@ class TrackController extends AbstractController
         $this->token = $this->authSpotifyService->auth();
     }
 
+    #[IsGranted("ROLE_USER")]
     #[Route('/add-to-fav/{id}', name: 'app_track_fav_add')]
     public function addToFav(string $id, EntityManagerInterface $em, TrackRepository $trackRepository, ArtistRepository $artistRepository, Request $request): Response
     {
+        $user = $this->getUser();
         $track = $this->spotifyRequestService->getTrack($id, $this->token);
         $existingTrack = $trackRepository->findOneBy(['spotifyId' => $track->getSpotifyId()]);
-        if ($existingTrack) {
-            $this->addFlash('info', 'Cette musique est déjà dans vos favoris.');
-            return $this->redirect($request->headers->get('referer') ?? $this->generateUrl('app_track_index'));
-        }
-
-        $artistsToPersist = new ArrayCollection();
-        foreach ($track->getArtists() as $artist) {
-            $existingArtist = $artistRepository->findOneBy(['idSpotify' => $artist->getIdSpotify()]);
-            if ($existingArtist) {
-                $artistsToPersist->add($existingArtist);
-            }
-        }
-        $track->getArtists()->clear();
-        foreach ($artistsToPersist as $artist) {
-            $track->addArtist($artist);
-        }
-
-        try {
+        if (!$existingTrack) {
             $em->persist($track);
             $em->flush();
+            $existingTrack = $track;
+        }
+        if (!$user->getFavTracks()->contains($existingTrack)) {
+            $user->addFavTrack($existingTrack);
+            $em->flush();
             $this->addFlash('success', 'Musique ajoutée aux favoris !');
-        } catch (\Exception $e) {
-            $this->addFlash('error', 'Une erreur est survenue : ' . $e->getMessage());
+        } else {
+            $this->addFlash('info', 'Cette musique est déjà dans vos favoris.');
         }
         return $this->redirect($request->headers->get('referer') ?? $this->generateUrl('app_track_index'));
     }
 
-
+    #[IsGranted("ROLE_USER")]
     #[Route('/delete-from-fav/{spotifyId}', name: 'app_track_fav_remove')]
-    public function delete(string $spotifyId, TrackRepository $trackRepository, EntityManagerInterface $em, Request $request): Response
+    public function deleteFromFav(string $spotifyId, TrackRepository $trackRepository, EntityManagerInterface $em, Request $request): Response
     {
+        $user = $this->getUser();
         $track = $trackRepository->findOneBy(['spotifyId' => $spotifyId]);
-
-        if (!$track) {
-            $this->addFlash('error', 'Musique introuvable dans vos favoris.');
-            return $this->redirect($request->headers->get('referer') ?? $this->generateUrl('app_track_fav'));
-        }
-
-        try {
-            $em->remove($track);
+        if ($track && $user->getFavTracks()->contains($track)) {
+            $user->removeFavTrack($track);
             $em->flush();
             $this->addFlash('success', 'Musique supprimée des favoris.');
-        } catch (\Exception $e) {
-            $this->addFlash('error', 'Erreur lors de la suppression : ' . $e->getMessage());
+        } else {
+            $this->addFlash('error', 'Musique introuvable dans vos favoris.');
         }
 
         return $this->redirect($request->headers->get('referer') ?? $this->generateUrl('app_track_fav'));
     }
 
-
+    #[IsGranted("ROLE_USER")]
     #[Route('/fav', name: 'app_track_fav')]
-    public function fav(TrackRepository $trackRepository): Response
+    public function fav(): Response
     {
-        $fav= $trackRepository->findAll();
+        $user = $this->getUser();
         return $this->render('track/fav.html.twig', [
-            'fav' => $fav,
+            'fav' => $user->getFavTracks(),
         ]);
     }
 
     #[Route('/show/{id}', name: 'app_track_show')]
     public function show(string $id): Response
     {
+        $user = $this->getUser();
+        $tabFav = [];
+        if ($user) {
+            foreach ($user->getFavTracks() as $track) {
+                $tabFav[] = $track->getSpotifyId();
+            }
+        }
         $track = $this->spotifyRequestService->getTrack($id, $this->token);
         $track = TrackFactory::enrichArtists($track, $this->spotifyRequestService, $this->token);
         return $this->render('track/show.html.twig', [
             'track' => $track,
+            'fav' => $tabFav,
         ]);
     }
 
     #[Route('/{search?}', name: 'app_track_index')]
-    public function index(?string $search, trackRepository $trackRepository): Response
+    public function index(?string $search, TrackRepository $trackRepository): Response
     {
-        $fav= $trackRepository->findAll();
-        $tabFav=[];
-        foreach ($fav as $f) {
-            $tabFav[]=$f->getSpotifyId();
+        $user = $this->getUser();
+        $tabFav = [];
+        if ($user) {
+            foreach ($user->getFavTracks() as $track) {
+                $tabFav[] = $track->getSpotifyId();
+            }
         }
         return $this->render('track/index.html.twig', [
             'tracks' => $this->spotifyRequestService->searchTracks($search ?: "iufghzifg", $this->token),
@@ -117,6 +113,7 @@ class TrackController extends AbstractController
             'fav' => $tabFav
         ]);
     }
+
 
 
 }

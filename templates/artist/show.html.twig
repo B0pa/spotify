@@ -17,6 +17,11 @@
                         <span class="badge bg-success fs-6">
                         {{ artist.popularity }}% populaire
                     </span>
+                        {% if artist.idSpotify in fav %}
+                            {% include 'artist/_delete_from_like.html.twig' %}
+                        {% else %}
+                            {% include 'artist/_add_to_like.html.twig' %}
+                        {% endif %}
                     </div>
                 </div>
             </div>

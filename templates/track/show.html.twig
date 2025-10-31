@@ -29,15 +29,14 @@
                                 <span class="badge bg-secondary me-2">Durée: {{ minutes }}:{% if seconds < 10 %}0{% endif %}{{ seconds }} min</span>
                                 <span class="badge bg-info">Piste: {{ track.trackNumber }}</span>
                             </div>
-                            <div class="mt-3">
+                            <div class="d-flex gap-4 mt-3">
                                 <a href="{{ track.uri }}" class="btn btn-success btn-sm" target="_blank">
                                     <i class="fa-brands fa-spotify text-light"></i> Écouter sur Spotify
                                 </a>
-                                {% if track.previewUrl %}
-                                    <audio controls class="mt-2 d-block">
-                                        <source src="{{ track.previewUrl }}" type="audio/mpeg">
-                                        Votre navigateur ne supporte pas l'élément audio.
-                                    </audio>
+                                {% if track.spotifyId in fav %}
+                                    {% include 'track/_delete_from_like.html.twig' %}
+                                {% else %}
+                                    {% include 'track/_add_to_like.html.twig' %}
                                 {% endif %}
                             </div>
                         </div>

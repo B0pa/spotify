@@ -67,9 +67,16 @@ class Track
     #[ORM\ManyToMany(targetEntity: Artist::class, mappedBy: 'songs', cascade: ['persist'])]
     private Collection $artists;
 
+    /**
+     * @var Collection<int, User>
+     */
+    #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'favTracks')]
+    private Collection $users;
+
     public function __construct()
     {
         $this->artists = new ArrayCollection();
+        $this->users = new ArrayCollection();
     }
 
 //    #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'tracks')]
@@ -308,6 +315,33 @@ public function removeArtist(Artist $artist): static
 {
     if ($this->artists->removeElement($artist)) {
         $artist->removeSong($this);
+    }
+
+    return $this;
+}
+
+/**
+ * @return Collection<int, User>
+ */
+public function getUsers(): Collection
+{
+    return $this->users;
+}
+
+public function addUser(User $user): static
+{
+    if (!$this->users->contains($user)) {
+        $this->users->add($user);
+        $user->addFavTrack($this);
+    }
+
+    return $this;
+}
+
+public function removeUser(User $user): static
+{
+    if ($this->users->removeElement($user)) {
+        $user->removeFavTrack($this);
     }
 
     return $this;

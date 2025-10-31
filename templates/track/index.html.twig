@@ -8,11 +8,13 @@
             <h1>Recherche de morceaux</h1>
             {{ render(path('app_include_search_form_track')) }}
         </div>
+        <a class="ms-auto btn btn-danger" aria-current="page" href="{{ path('app_artist_fav') }}">Mes Artistes
+            <span class=""><i class=" fa fa-heart"></i></span></a>
     </div>
 
     <hr>
 
-    <h2>Résultat pour {{ search }} : </h2>
+    {% if search is not null %}<h2>Résultat pour {{ search }} :</h2>{% endif%}
 
     <div class="d-flex flex-wrap justify-content-center gap-4" >
 
