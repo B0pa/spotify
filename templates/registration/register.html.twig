@@ -1,0 +1,59 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Register{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h1 class="h3 text-center">Créer un compte</h1>
+                </div>
+                <div class="card-body">
+{{ form_errors(registrationForm) }}
+                    {{ form_start(registrationForm) }}
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ form_row(registrationForm.lastname, {
+                                'attr': {'class': 'form-control'},
+                                'label_attr': {'class': 'form-label'}
+                            }) }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form_row(registrationForm.firstname, {
+                                'attr': {'class': 'form-control'},
+                                'label_attr': {'class': 'form-label'}
+                            }) }}
+                        </div>
+                    </div>
+
+                    {{ form_row(registrationForm.email, {
+                        'attr': {'class': 'form-control'},
+                        'label_attr': {'class': 'form-label'}
+                    }) }}
+
+                    {{ form_row(registrationForm.plainPassword, {
+                        'label': 'Password',
+                        'attr': {'class': 'form-control'},
+                        'label_attr': {'class': 'form-label'}
+                    }) }}
+
+                    <div class="mb-3">
+                        {{ form_row(registrationForm.agreeTerms, {
+                            'label_attr': {'class': 'form-check-label'},
+                            'attr': {'class': 'form-check-input'}
+                        }) }}
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg">S'inscrire</button>
+                        <a class="btn btn-outline-secondary" href="{{ path('app_login') }}">Déjà un compte ? Se connecter</a>
+                    </div>
+                    {{ form_end(registrationForm) }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

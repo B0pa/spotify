@@ -1,0 +1,88 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes favoris{% endblock %}
+
+{% block body %}
+<div class="container mt-4"> <h1 class="mb-4">Mes favoris</h1>
+    <div class="row">
+        <!-- Musiques -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="h5 mb-0">Musiques</h2>
+                </div>
+                <div class="card-body">
+                    {% if favTracks is not empty %}
+                        <div class="list-group list-group-flush">
+                            {% for track in favTracks %}
+                                {% set totalSeconds = (track.durationMs / 1000)|round(0, 'floor') %}
+                                {% set minutes = (totalSeconds / 60)|round(0, 'floor') %}
+                                {% set seconds = totalSeconds % 60 %}
+
+                                <div class="list-group-item d-flex align-items-center gap-3">
+                                    <img src="{{ track.pictureLink }}" alt="{{ track.name }}" class="rounded" style="width: 60px; height: 60px; object-fit: cover;">
+
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-1">{{ track.name }}</h6>
+                                        <small class="text-muted">
+                                            {% for artist in track.artists %}{{ artist.name }}{% if not loop.last %}, {% endif %}{% endfor %}
+                                        </small>
+                                        <div class="mt-1">
+                                            <span class="badge bg-secondary">Durée: {{ minutes }}:{% if seconds < 10 %}0{% endif %}{{ seconds }}</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex gap-2">
+                                        <a class="btn btn-outline-primary btn-sm" href="{{ path('app_track_show',{"id":track.spotifyId}) }}">
+                                            Voir
+                                        </a>
+                                        {% include 'track/_delete_from_like.html.twig' %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted mb-0">Aucune musique dans vos favoris.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Artistes -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h2 class="h5 mb-0">Artistes</h2>
+                </div>
+                <div class="card-body">
+                    {% if favArtists is not empty %}
+                        <div class="list-group list-group-flush">
+                            {% for artist in favArtists %}
+                                <div class="list-group-item d-flex align-items-center gap-3">
+                                    <img src="{{ artist.imageUrl }}" alt="{{ artist.name }}" class="rounded-circle" style="width: 60px; height: 60px; object-fit: cover;">
+
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-1">{{ artist.name }}</h6>
+                                        <div class="mt-1">
+                                            <span class="badge bg-secondary">{{ artist.followers|number_format(0, ',', ' ') }} Followers</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex gap-2">
+                                        <a class="btn btn-outline-success btn-sm" href="{{ path('app_artist_show',{"id":artist.idSpotify}) }}">
+                                            Voir
+                                        </a>
+                                        {% include 'artist/_delete_from_like.html.twig' %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted mb-0">Aucun artiste dans vos favoris.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

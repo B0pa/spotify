@@ -1,0 +1,73 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}SpotiSuck{% endblock %}
+
+{% block body %}
+<div class="container mt-5"> <h1 class="text-center mb-5">Bonjour {% if app.user %}{{ app.user.firstname }}{% endif %}!</h1>
+    <div class="row g-4">
+        <div class="col-md-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <div class="mb-3">
+                        <i class="fa fa-5x fa-music text-primary"></i>
+                    </div>
+                    <h5 class="card-title">Rechercher un morceau</h5>
+                    <a href="{{ path('app_track_index') }}" class="btn btn-primary mt-2">
+                        Rechercher <i class="fa fa-search ms-2"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <div class="mb-3">
+                        <i class="fa fa-5x fa-user-tie text-warning"></i>
+                    </div>
+                    <h5 class="card-title">Rechercher un artiste</h5>
+                    <a href="{{ path('app_artist_index') }}" class="btn btn-warning mt-2">
+                        Rechercher <i class="fa fa-search ms-2"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <div class="mb-3">
+                        <i class="fa fa-5x fa-heart text-danger"></i>
+                    </div>
+                    <h5 class="card-title">Mes favoris</h5>
+                    <a href="{{ path('app_favorites') }}" class="btn btn-danger mt-2">
+                        Voir mes favoris
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    {% if app.user %}
+                        <div class="mb-3">
+                            <i class="fa fa-5x fa-gear text-success"></i>
+                        </div>
+                        <h5 class="card-title">Déconnexion</h5>
+                        <a href="{{ path('app_logout') }}" class="btn btn-success mt-2">
+                            Se déconnecter
+                        </a>
+                    {% else %}
+                        <div class="mb-3">
+                            <i class="fa fa-5x fa-user text-success"></i>
+                        </div>
+                        <h5 class="card-title">Compte</h5>
+                        <a href="{{ path('app_login') }}" class="btn btn-success mt-2">
+                            Créer un compte ou se connecter
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
